@@ -9,538 +9,426 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import Link from "next/link";
-
-const presetAmounts = [10, 25, 50, 100, 250, 500]
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Lock, CreditCard, X, Calendar } from "lucide-react"
 
 const DonationForm = () => {
+  const [donationTab, setDonationTab] = useState<"general" | "tribute">("tribute")
+  const [tributeType, setTributeType] = useState("celebration")
+  const [honoreeName, setHonoreeName] = useState("")
+  const [supporterType, setSupporterType] = useState("Corporate")
+  const [isAnonymous, setIsAnonymous] = useState(false)
+  const [isFromOrganization, setIsFromOrganization] = useState(false)
+  const [employerMatch, setEmployerMatch] = useState("")
+  const [showPaymentModal, setShowPaymentModal] = useState(false)
+
   const [step, setStep] = useState(1)
-  const [amount, setAmount] = useState(25)
+  const [amount, setAmount] = useState(25) // Changed default amount to $25 to match reference
   const [customAmount, setCustomAmount] = useState("")
-  const [donationType, setDonationType] = useState<"once" | "monthly">("once")
-  const [privateMessage, setPrivateMessage] = useState("")
-  const [isDedicated, setIsDedicated] = useState(false)
-  const [dedicationMessage, setDedicationMessage] = useState("")
-  const [donorType, setDonorType] = useState<"personal" | "corporate">("personal")
+  const [donationType, setDonationType] = useState<"once" | "monthly">("monthly") // Changed default to recurring
+  const [recurringFrequency, setRecurringFrequency] = useState("Weekly")
+  const [nextPaymentDate, setNextPaymentDate] = useState("09/20/2025")
   const [donor, setDonor] = useState({
     first: "",
     last: "",
     email: "",
-    address1: "",
-    address2: "",
+    address: "",
     city: "",
-    country: "Canada",
-    province: "",
-    postalCode: "",
+    country: "United States",
+    state: "",
+    zipCode: "",
   })
-  const [paymentMethod, setPaymentMethod] = useState("card")
-  const [status, setStatus] = useState("")
 
-  // Step 1: Amount
+  const presetAmounts = [25, 50, 100, 250] // Updated preset amounts to match reference
+
   const handleAmountSelect = (amt: number) => {
     setAmount(amt)
     setCustomAmount("")
   }
+
   const handleCustomAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCustomAmount(e.target.value)
     setAmount(Number(e.target.value))
   }
 
-  // Step 2: Donor Info
   const handleDonorChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setDonor({ ...donor, [e.target.name]: e.target.value })
   }
 
-  // Step 3: Payment
-  const handleDonate = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    setStatus("success")
-    setStep(4)
+    setShowPaymentModal(true)
   }
+  const institutionName = "Donattion Delight"
 
   return (
-    <div className="max-w-2xl mx-auto py-10 px-4">
-      {step === 1 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-center">Your donation</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="flex rounded-lg overflow-hidden border">
-              <Button
-                type="button"
-                variant={donationType === "once" ? "default" : "secondary"}
-                className="flex-1 rounded-none bg-amber-800 hover:bg-amber-700 text-white"
-                onClick={() => setDonationType("once")}
-              >
-                Donate once
-              </Button>
-              <Button
-                type="button"
-                variant={donationType === "monthly" ? "default" : "secondary"}
-                className="flex-1 rounded-none"
-                onClick={() => setDonationType("monthly")}
-              >
-                Donate monthly
-              </Button>
-            </div>
-
+    <div className="max-w-2xl mx-auto py-8 px-4 bg-green-50 min-h-screen">
+      <Card className="border-0 shadow-lg bg-white">
+        <CardHeader className="pb-4">
+          <div className="flex items-start gap-3 mb-4">
+            <div className="w-1 h-8 bg-yellow-400 rounded-full"></div>
             <div>
-              <Label className="text-sm font-medium">Donation amount</Label>
-              <div className="flex flex-wrap gap-2 mt-2 mb-4">
+              <CardTitle className="text-3xl font-bold text-blue-900 mb-2">Make a Donation</CardTitle>
+              <p className="text-blue-600 text-sm underline cursor-pointer">
+                Click here to view the  {institutionName} donor privacy policy.
+              </p>
+            </div>
+          </div>
+
+          <Tabs
+            value={donationTab}
+            onValueChange={(value) => setDonationTab(value as "general" | "tribute")}
+            className="w-full"
+          >
+            <TabsList className="grid w-full grid-cols-2 bg-transparent p-0 h-auto">
+              <TabsTrigger
+                value="general"
+                className="data-[state=active]:bg-transparent data-[state=active]:text-orange-600 data-[state=active]:border-b-2 data-[state=active]:border-orange-600 rounded-none pb-3 font-medium"
+              >
+                General Donation
+              </TabsTrigger>
+              <TabsTrigger
+                value="tribute"
+                className="data-[state=active]:bg-transparent data-[state=active]:text-orange-600 data-[state=active]:border-b-2 data-[state=active]:border-orange-600 rounded-none pb-3 font-medium"
+              >
+                Give in Tribute
+              </TabsTrigger>
+            </TabsList>
+            <div className="border-b border-yellow-400 w-full mt-0 mb-6"></div>
+
+            <TabsContent value="tribute" className="mt-0">
+              <div className="space-y-4 mb-6">
+                <h3 className="text-lg font-semibold text-gray-900">Donate in Tribute</h3>
+                <div>
+                  <Select value={tributeType} onValueChange={setTributeType}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Type of dedication" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="memory">In Memory Of</SelectItem>
+                      <SelectItem value="honor">In Honor Of</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Input
+                    type="text"
+                    value={honoreeName}
+                    onChange={(e) => setHonoreeName(e.target.value)}
+                    placeholder="Honoree name"
+                    className="w-full"
+                  />
+                  <div className="text-right text-sm text-gray-500 mt-1">0/50</div>
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </CardHeader>
+
+        <CardContent className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Donation Amount</h3>
+
+              <div className="flex rounded-lg overflow-hidden border mb-4">
+                <Button
+                  type="button"
+                  variant={donationType === "once" ? "default" : "secondary"}
+                  className={`flex-1 rounded-none ${
+                    donationType === "once"
+                      ? "bg-green-600 hover:bg-green-700 text-white"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
+                  onClick={() => setDonationType("once")}
+                >
+                  One-time donation
+                </Button>
+                <Button
+                  type="button"
+                  variant={donationType === "monthly" ? "default" : "secondary"}
+                  className={`flex-1 rounded-none ${
+                    donationType === "monthly"
+                      ? "bg-green-600 hover:bg-green-700 text-white"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
+                  onClick={() => setDonationType("monthly")}
+                >
+                  Recurring donation
+                </Button>
+              </div>
+
+              <div className="grid grid-cols-4 gap-2 mb-4">
                 {presetAmounts.map((amt) => (
                   <Button
                     type="button"
                     key={amt}
                     variant={amount === amt ? "default" : "outline"}
-                    className={`px-6 py-3 ${amount === amt ? "bg-amber-800 hover:bg-amber-700" : ""}`}
+                    className={`py-6 text-lg font-semibold ${
+                      amount === amt
+                        ? "bg-green-600 hover:bg-green-700 text-white"
+                        : "border-gray-300 text-gray-700 hover:bg-gray-50"
+                    }`}
                     onClick={() => handleAmountSelect(amt)}
                   >
-                    ${amt.toFixed(2)}
+                    ${amt}
                   </Button>
                 ))}
               </div>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
-                <Input
-                  type="number"
-                  min={1}
-                  step={0.01}
-                  value={customAmount}
-                  onChange={handleCustomAmount}
-                  placeholder="Enter amount"
-                  className="pl-8"
-                />
-              </div>
+
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full py-6 text-lg border-gray-300 text-gray-700 hover:bg-gray-50 bg-transparent"
+                onClick={() => setCustomAmount("1")}
+              >
+                Other amount
+              </Button>
+
+              {customAmount && (
+                <div className="mt-4">
+                  <Input
+                    type="number"
+                    min={1}
+                    step={0.01}
+                    value={customAmount}
+                    onChange={handleCustomAmount}
+                    placeholder="Enter amount"
+                    className="text-lg py-3"
+                  />
+                </div>
+              )}
+
+              {donationType === "monthly" && (
+                <div className="mt-4 space-y-4 p-4 bg-green-50 rounded-lg">
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700">Process my Donation</Label>
+                    <Select value={recurringFrequency} onValueChange={setRecurringFrequency}>
+                      <SelectTrigger className="w-full mt-1">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Weekly">Weekly</SelectItem>
+                        <SelectItem value="Monthly">Monthly</SelectItem>
+                        <SelectItem value="Quarterly">Quarterly</SelectItem>
+                        <SelectItem value="Annually">Annually</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700">Next payment on</Label>
+                    <div className="relative mt-1">
+                      <Input
+                        type="text"
+                        value={nextPaymentDate}
+                        onChange={(e) => setNextPaymentDate(e.target.value)}
+                        placeholder="MM/DD/YYYY"
+                        className="pr-10"
+                      />
+                      <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">Use the format MM/DD/YYYY.</p>
+                  </div>
+
+                  <p className="text-sm text-gray-700">
+                    Your first Donationprocesses today. The next Donationprocesses on {nextPaymentDate}.
+                  </p>
+                </div>
+              )}
             </div>
 
-            <div>
-              <Label className="text-sm text-blue-600 underline cursor-pointer">
-                Write a private message to us (optional)
-              </Label>
-              <Textarea
-                value={privateMessage}
-                onChange={(e) => setPrivateMessage(e.target.value)}
-                placeholder="Your message..."
-                className="mt-2"
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="anonymous"
+                checked={isAnonymous}
+                onCheckedChange={(checked) => setIsAnonymous(checked as boolean)}
+                className="data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
               />
+              <Label htmlFor="anonymous" className="text-sm text-gray-700">
+                I would like the Donation to remain anonymous
+              </Label>
             </div>
 
             <div className="bg-gray-50 p-4 rounded-lg">
-              <div className="flex items-center space-x-2 mb-3">
-                <div className="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center">
-                  <span className="text-xs">👤</span>
-                </div>
-                <Label className="font-medium">Want to dedicate your gift to someone special?</Label>
+              <p className="text-sm text-gray-700">
+                Your Donationwill go to our annual Fund to Support the area of greatest need for the organization.
+              </p>
+              <div className="mt-3">
+                <Label className="text-sm font-medium text-gray-700">Supporter Type</Label>
+                <Select value={supporterType} onValueChange={setSupporterType}>
+                  <SelectTrigger className="w-full mt-1">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Individual Unrestricted">Individual Unrestricted</SelectItem>
+                    <SelectItem value="Alumni Unrestricted">Alumni Unrestricted</SelectItem>
+                    <SelectItem value="Corporate">Corporate</SelectItem>
+                    <SelectItem value="Foundation">Foundation</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-              <div className="flex items-center space-x-2">
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Your information</h3>
+
+              <div className="flex items-center space-x-2 mb-4">
                 <Checkbox
-                  id="dedication"
-                  checked={isDedicated}
-                  onCheckedChange={(checked) => setIsDedicated(checked as boolean)}
+                  id="organization"
+                  checked={isFromOrganization}
+                  onCheckedChange={(checked) => setIsFromOrganization(checked as boolean)}
+                  className="data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
                 />
-                <Label htmlFor="dedication" className="text-sm">
-                  Yes, I want to dedicate my donation
+                <Label htmlFor="organization" className="text-sm text-gray-700">
+                  {donationTab === "tribute"
+                    ? "I would like to give on behalf of an organization"
+                    : "This Donationis from an organization"}
                 </Label>
               </div>
-              {isDedicated && (
-                <Textarea
-                  value={dedicationMessage}
-                  onChange={(e) => setDedicationMessage(e.target.value)}
-                  placeholder="Enter dedication message..."
-                  className="mt-3"
-                />
-              )}
-            </div>
 
-            <Button onClick={() => setStep(2)} className="w-full bg-amber-800 hover:bg-amber-700">
-              Continue →
-            </Button>
-            <div className="flex items-center justify-center text-xs text-gray-500">
-              <span className="mr-1">🔒</span> 100% Secure Donation
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {step === 2 && (
-        <Card>
-          <CardHeader>
-            <Button variant="ghost" onClick={() => setStep(1)} className="mb-2 p-0 h-auto text-amber-700">
-              ← Back
-            </Button>
-            <CardTitle className="text-center">Your details</CardTitle>
-            <p className="text-center text-gray-600 text-sm">
-              Tell us a bit about yourself so we can send your tax receipt.
-            </p>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <Tabs value={donorType} onValueChange={(value) => setDonorType(value as "personal" | "corporate")}>
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="personal">Personal</TabsTrigger>
-                <TabsTrigger value="corporate">Corporate</TabsTrigger>
-              </TabsList>
-              <TabsContent value="personal" className="space-y-4 mt-6">
+              <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
-                  <Label>Email Address *</Label>
-                  <div className="relative mt-1">
-                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">📧</span>
-                    <Input
-                      type="email"
-                      name="email"
-                      value={donor.email}
-                      onChange={handleDonorChange}
-                      placeholder="Enter your email address"
-                      className="pl-10"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label>First Name *</Label>
-                    <div className="relative mt-1">
-                      <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">👤</span>
-                      <Input
-                        type="text"
-                        name="first"
-                        value={donor.first}
-                        onChange={handleDonorChange}
-                        placeholder="Enter your first name"
-                        className="pl-10"
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <Label>Last Name *</Label>
-                    <div className="relative mt-1">
-                      <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">👤</span>
-                      <Input
-                        type="text"
-                        name="last"
-                        value={donor.last}
-                        onChange={handleDonorChange}
-                        placeholder="Enter your last name"
-                        className="pl-10"
-                        required
-                      />
-                    </div>
-                  </div>
-                </div>
-              </TabsContent>
-              <TabsContent value="corporate" className="space-y-4 mt-6">
-                <div>
-                  <Label>Company Email *</Label>
-                  <Input
-                    type="email"
-                    name="email"
-                    value={donor.email}
-                    onChange={handleDonorChange}
-                    placeholder="Enter company email"
-                    required
-                  />
+                  <Label className="text-sm font-medium text-gray-700">First name</Label>
+                  <Input type="text" name="first" value={donor.first} onChange={handleDonorChange} className="mt-1" />
                 </div>
                 <div>
-                  <Label>Company Name *</Label>
+                  <Label className="text-sm font-medium text-gray-700">Last name</Label>
+                  <Input type="text" name="last" value={donor.last} onChange={handleDonorChange} className="mt-1" />
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <Label className="text-sm font-medium text-gray-700">Email</Label>
+                <Input type="email" name="email" value={donor.email} onChange={handleDonorChange} className="mt-1" />
+              </div>
+
+              <div className="mb-4">
+                <Label className="text-sm font-medium text-gray-700">Country</Label>
+                <Select value={donor.country} onValueChange={(value) => setDonor({ ...donor, country: value })}>
+                  <SelectTrigger className="mt-1">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="United States">United States</SelectItem>
+                    <SelectItem value="Canada">Canada</SelectItem>
+                    <SelectItem value="United Kingdom">United Kingdom</SelectItem>
+                    <SelectItem value="Australia">Australia</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="mb-4">
+                <Label className="text-sm font-medium text-gray-700">Address</Label>
+                <Textarea name="address" value={donor.address} onChange={handleDonorChange} className="mt-1" rows={3} />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                  <Label className="text-sm font-medium text-gray-700">City</Label>
+                  <Input type="text" name="city" value={donor.city} onChange={handleDonorChange} className="mt-1" />
+                </div>
+                <div>
+                  <Label className="text-sm font-medium text-gray-700">ZIP code</Label>
                   <Input
                     type="text"
-                    name="first"
-                    value={donor.first}
+                    name="zipCode"
+                    value={donor.zipCode}
                     onChange={handleDonorChange}
-                    placeholder="Enter company name"
-                    required
-                  />
-                </div>
-              </TabsContent>
-            </Tabs>
-
-            <div className="space-y-4">
-              <h3 className="font-medium">Address</h3>
-              <div>
-                <Label>Address line 1 *</Label>
-                <div className="relative mt-1">
-                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">📍</span>
-                  <Input
-                    type="text"
-                    name="address1"
-                    value={donor.address1}
-                    onChange={handleDonorChange}
-                    placeholder="Enter your address"
-                    className="pl-10"
-                    required
+                    className="mt-1"
                   />
                 </div>
               </div>
 
-              <div>
-                <Label>Address line 2 (optional)</Label>
-                <div className="relative mt-1">
-                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">📍</span>
-                  <Input
-                    type="text"
-                    name="address2"
-                    value={donor.address2}
-                    onChange={handleDonorChange}
-                    placeholder="Apartment, suite, etc."
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>City *</Label>
-                  <Input
-                    type="text"
-                    name="city"
-                    value={donor.city}
-                    onChange={handleDonorChange}
-                    placeholder="Enter your city"
-                    required
-                  />
-                </div>
-                <div>
-                  <Label>Country *</Label>
-                  <Select value={donor.country} onValueChange={(value) => setDonor({ ...donor, country: value })}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Canada">Canada</SelectItem>
-                      <SelectItem value="United States">United States</SelectItem>
-                      <SelectItem value="United Kingdom">United Kingdom</SelectItem>
-                      <SelectItem value="Australia">Australia</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>Province *</Label>
-                  <Select value={donor.province} onValueChange={(value) => setDonor({ ...donor, province: value })}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Province" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="AB">Alberta</SelectItem>
-                      <SelectItem value="BC">British Columbia</SelectItem>
-                      <SelectItem value="MB">Manitoba</SelectItem>
-                      <SelectItem value="NB">New Brunswick</SelectItem>
-                      <SelectItem value="NL">Newfoundland and Labrador</SelectItem>
-                      <SelectItem value="NS">Nova Scotia</SelectItem>
-                      <SelectItem value="ON">Ontario</SelectItem>
-                      <SelectItem value="PE">Prince Edward Island</SelectItem>
-                      <SelectItem value="QC">Quebec</SelectItem>
-                      <SelectItem value="SK">Saskatchewan</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label>Postal code *</Label>
-                  <Input
-                    type="text"
-                    name="postalCode"
-                    value={donor.postalCode}
-                    onChange={handleDonorChange}
-                    placeholder="Enter your postal code"
-                    required
-                  />
-                </div>
+              <div className="mb-4">
+                <Label className="text-sm font-medium text-gray-700">State</Label>
+                <Select value={donor.state} onValueChange={(value) => setDonor({ ...donor, state: value })}>
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select state" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="AL">Alabama</SelectItem>
+                    <SelectItem value="CA">California</SelectItem>
+                    <SelectItem value="FL">Florida</SelectItem>
+                    <SelectItem value="NY">New York</SelectItem>
+                    <SelectItem value="TX">Texas</SelectItem>
+                    {/* Add more states as needed */}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
-
-            <Button onClick={() => setStep(3)} className="w-full bg-amber-800 hover:bg-amber-700">
-              Continue →
+            <Button
+              type="submit"
+              className="w-full bg-green-600 hover:bg-green-700 text-white py-6 text-lg font-semibold rounded-lg flex items-center justify-center gap-2"
+            >
+              <Lock className="w-5 h-5" />
+              Give securely
             </Button>
-            <div className="flex items-center justify-center text-xs text-gray-500">
-              <span className="mr-1">🔒</span> 100% Secure Donation
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
-      {step === 3 && (
-        <Card>
-          <CardHeader>
-            <Button variant="ghost" onClick={() => setStep(2)} className="mb-2 p-0 h-auto text-amber-700">
-              ← Back
+            <div className="text-center text-sm text-gray-600">
+              To learn how we collect and use your information, please read our{" "}
+              <span className="text-green-600 underline cursor-pointer">privacy policy</span>.
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+
+      <Dialog open={showPaymentModal} onOpenChange={setShowPaymentModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader className="relative">
+            <button
+              onClick={() => setShowPaymentModal(false)}
+              className="absolute right-0 top-0 p-2 hover:bg-gray-100 rounded-full"
+            >
+              <X className="h-4 w-4" />
+            </button>
+            <div className="flex flex-col items-center space-y-4 pt-4">
+              <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                <Lock className="w-6 h-6 text-yellow-600" />
+              </div>
+              <DialogTitle className="text-xl font-semibold text-center">Payment method</DialogTitle>
+              <p className="text-sm text-gray-600 text-center">
+                Our strict PCI-compliance standards keep your data safe.
+              </p>
+            </div>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <Button
+              variant="outline"
+              className="w-full h-14 flex items-center justify-center gap-3 border-2 hover:bg-gray-50 bg-transparent"
+              onClick={() => {
+                // Handle credit card payment
+                console.log("Credit card payment selected")
+              }}
+            >
+              <CreditCard className="w-5 h-5 text-gray-600" />
+              <span className="text-base">Credit or debit card</span>
             </Button>
-            <CardTitle className="text-center">Summary</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="bg-gray-50 rounded-lg p-4 space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="font-medium">Your donation</span>
-                <span className="font-bold">${amount.toFixed(2)}</span>
-              </div>
-              <div className="text-sm text-gray-600">Your gift to St. Catherine of Siena Parish</div>
-              {isDedicated && (
-                <div className="text-sm text-gray-600 border-t pt-2">
-                  <strong>Dedication:</strong> {dedicationMessage}
-                </div>
-              )}
-              <div className="flex justify-between items-center text-sm border-t pt-2">
-                <span>Donation to CanadaHelps</span>
-                <span>$3</span>
-              </div>
-              <div className="text-xs text-gray-500">
-                Add a one-time small donation to CanadaHelps. Your support helps them continue providing affordable
-                fundraising tools to charities like ours.
-              </div>
-              <div className="flex justify-between items-center font-bold text-lg border-t pt-2">
-                <span>Total</span>
-                <span>${(amount + 3).toFixed(2)}</span>
-              </div>
-            </div>
 
-            <div className="space-y-4">
-              <div className="flex items-center space-x-2 mb-4">
-                <span className="text-green-600">🔒</span>
-                <span className="font-medium">Your payment information</span>
-              </div>
-              <p className="text-sm text-gray-600 mb-4">Donate with any of these secure payment methods.</p>
+            <div className="text-center text-sm text-gray-500">or</div>
 
-              <div className="grid grid-cols-4 gap-2 mb-4">
-                <Button
-                  type="button"
-                  variant={paymentMethod === "card" ? "default" : "outline"}
-                  className="p-3 h-12"
-                  onClick={() => setPaymentMethod("card")}
-                >
-                  💳
-                </Button>
-                <Button
-                  type="button"
-                  variant={paymentMethod === "paypal" ? "default" : "outline"}
-                  className="p-3 h-12"
-                  onClick={() => setPaymentMethod("paypal")}
-                >
-                  PayPal
-                </Button>
-                <Button
-                  type="button"
-                  variant={paymentMethod === "google" ? "default" : "outline"}
-                  className="p-3 h-12"
-                  onClick={() => setPaymentMethod("google")}
-                >
-                  G Pay
-                </Button>
-                <Button
-                  type="button"
-                  variant={paymentMethod === "bank" ? "default" : "outline"}
-                  className="p-3 h-12"
-                  onClick={() => setPaymentMethod("bank")}
-                >
-                  🏦
-                </Button>
-              </div>
-
-              {paymentMethod === "card" && (
-                <div className="space-y-4">
-                  <div>
-                    <Label>Credit Card *</Label>
-                    <div className="relative mt-1">
-                      <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">💳</span>
-                      <Input type="text" placeholder="1234 1234 1234 1234" className="pl-10" />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label>Expiration *</Label>
-                      <Input type="text" placeholder="MM/YY" />
-                    </div>
-                    <div>
-                      <Label>CVV *</Label>
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">🔒</span>
-                        <Input type="text" placeholder="123" className="pl-10" />
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <Label>Name on card *</Label>
-                    <div className="relative mt-1">
-                      <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">👤</span>
-                      <Input type="text" placeholder="Enter the name on the credit card" className="pl-10" />
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <Button onClick={handleDonate} className="w-full bg-amber-800 hover:bg-amber-700 text-lg py-6">
-              Donate
+            <Button
+              variant="outline"
+              className="w-full h-14 flex items-center justify-center gap-3 border-2 hover:bg-gray-50 bg-transparent"
+              onClick={() => {
+                // Handle PayPal payment
+                console.log("PayPal payment selected")
+              }}
+            >
+              <div className="text-blue-600 font-bold text-lg">PayPal</div>
             </Button>
-            <div className="flex items-center justify-center text-xs text-gray-500">
-              <span className="mr-1">🔒</span> 100% Secure Donation
-            </div>
-          </CardContent>
-        </Card>
-      )}
+          </div>
 
-      {step === 4 && status === "success" && (
-        <Card className="bg-green-50 border-green-200">
-          <CardContent className="p-8 text-center space-y-6">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-              <span className="text-2xl">✓</span>
+          <div className="border-t pt-4">
+            <div className="flex justify-between items-center text-lg font-semibold">
+              <span>Total amount</span>
+              <span>${customAmount || amount}.00</span>
             </div>
-            <div>
-              <span className="bg-green-600 text-white px-4 py-2 rounded-full font-semibold">Success!</span>
-            </div>
-            <h2 className="text-2xl font-bold text-green-800">Hey {donor.first}, thanks for your donation!</h2>
-            <p className="text-gray-700">
-              {donor.first}, your contribution means a lot and will be put to good use in making a difference. We've
-              sent your donation receipt to {donor.email}.
-            </p>
-
-            <div className="bg-white rounded-lg p-6 text-left space-y-4">
-              <h3 className="font-bold">Donor Details</h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span>Donor Name</span>
-                  <span>
-                    {donor.first} {donor.last}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Email Address</span>
-                  <span>{donor.email}</span>
-                </div>
-              </div>
-
-              <h3 className="font-bold pt-4">Donation Details</h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span>Payment Status</span>
-                  <span className="text-green-600 font-bold">● Completed</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Payment Method</span>
-                  <span>{paymentMethod === "card" ? "Credit Card" : paymentMethod}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Donation Amount</span>
-                  <span>${amount.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between font-bold">
-                  <span>Donation Total</span>
-                  <span>${(amount + 3).toFixed(2)}</span>
-                </div>
-              </div>
-            </div>
-
-            <Button variant="outline" className="text-green-700 border-green-300 bg-transparent">
-              <Link href="/campaign-grid" className="block w-full h-full">
-                Go to my Donor Dashboard
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
-      )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
+
 export default DonationForm

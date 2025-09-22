@@ -32,6 +32,7 @@ const TABS = ["Overview", "Profile"];
 
 export default function DonorSinglePage() {
   const [tab, setTab] = useState("Overview");
+  const [photo, setPhoto] = useState<string | null>(null);
   const chartData = {
     labels: donor.contributions.map(c => c.date),
     datasets: [
@@ -131,8 +132,27 @@ export default function DonorSinglePage() {
         <div className="bg-white rounded shadow p-6">
           <div className="font-semibold mb-4">Personal Details</div>
           <div className="flex items-center gap-6 mb-6">
-            <span className="inline-block w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center text-4xl">&#128100;</span>
-            <button className="border px-3 py-1 rounded">Upload photo</button>
+            {photo ? (
+              <img src={photo} alt="Donor" className="w-20 h-20 rounded-full object-cover border" />
+            ) : (
+              <span className="inline-block w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center text-4xl">&#128100;</span>
+            )}
+            <label className="border px-3 py-1 rounded cursor-pointer bg-gray-50 hover:bg-gray-100">
+              Upload photo
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={e => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    const reader = new FileReader();
+                    reader.onload = ev => setPhoto(ev.target?.result as string);
+                    reader.readAsDataURL(file);
+                  }
+                }}
+              />
+            </label>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div>

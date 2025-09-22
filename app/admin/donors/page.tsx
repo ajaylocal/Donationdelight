@@ -3,6 +3,7 @@ const donors = [
   {
     name: "Amanda White",
     email: "amanda.white122@mail.com",
+    phone: "(555) 123-4567",
     total: 100,
     donations: 1,
     latest: "07/19/2025 at 12:53 am",
@@ -12,6 +13,7 @@ const donors = [
   {
     name: "Matthew Lewis",
     email: "matthew.lewis345@demo.com",
+    phone: "(555) 234-5678",
     total: 4.90,
     donations: 1,
     latest: "07/16/2025 at 8:49 am",
@@ -21,6 +23,7 @@ const donors = [
   {
     name: "Anthony Hernandez",
     email: "anthony.hernandez273@example.com",
+    phone: "(555) 345-6789",
     total: 10.00,
     donations: 1,
     latest: "07/13/2025 at 2:02 am",
@@ -30,6 +33,7 @@ const donors = [
   {
     name: "Elizabeth Rodriguez",
     email: "elizabeth.rodriguez216@outlook.com",
+    phone: "(555) 456-7890",
     total: 200.00,
     donations: 1,
     latest: "07/24/2025 at 5:12 pm",
@@ -39,6 +43,7 @@ const donors = [
   {
     name: "Amanda Brown",
     email: "amanda.brown391@mail.com",
+    phone: "(555) 567-8901",
     total: 100.00,
     donations: 1,
     latest: "07/21/2025 at 4:34 pm",
@@ -58,6 +63,7 @@ export default function DonorsPage() {
           <thead>
             <tr className="border-b">
               <th className="py-2">Donor Information</th>
+              <th>Phone Number</th>
               <th>Total Given</th>
               <th>Donations</th>
               <th>Latest Donation</th>
@@ -72,7 +78,7 @@ export default function DonorsPage() {
                   <span className="inline-block w-10 h-10 rounded-full bg-gray-200" />
                   <div>
                     <Link
-                      href={`/admin/donors/${encodeURIComponent(donor.name.toLowerCase().replace(/\s+/g, '-'))}`}
+                      href={`/admin/donors/${encodeURIComponent(donor.name.toLowerCase().replace(/\s+/g, '-') )}`}
                       className="font-semibold text-blue-700 hover:underline"
                     >
                       {donor.name}
@@ -80,6 +86,7 @@ export default function DonorsPage() {
                     <div className="text-xs text-gray-500">{donor.email}</div>
                   </div>
                 </td>
+                <td className="text-gray-700">{donor.phone}</td>
                 <td className="text-green-600 font-bold">${donor.total.toFixed(2)}</td>
                 <td className="text-blue-700 underline cursor-pointer">{donor.donations} donation</td>
                 <td>{donor.latest}</td>

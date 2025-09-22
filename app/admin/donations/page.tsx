@@ -62,7 +62,12 @@ export default function DonationsPage() {
     <div className="p-6">
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-2xl font-bold">Donations</h1>
-  <Button variant="default">New Donation</Button>
+        <div className="flex gap-2">
+          <Link href="/admin/donations/manual-donation">
+            <Button variant="outline">Manual Donation</Button>
+          </Link>
+          {/* <Button variant="default">New Donation</Button> */}
+        </div>
       </div>
       <div className="flex flex-wrap gap-2 items-center mb-4">
         <Select>

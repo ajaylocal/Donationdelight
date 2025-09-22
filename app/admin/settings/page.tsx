@@ -69,6 +69,20 @@ export default function SettingsPage() {
     )
   }
 
+<<<<<<< HEAD
+  const [billingEnabled, setBillingEnabled] = useState(false)
+  const [instructions, setInstructions] = useState(`To make an offline donation toward this cause, follow these steps:
+
+1. Write a check payable to "{sitename}"
+2. On the memo line of the check, indicate that the donation is for "{sitename}"
+3. Mail your check to:
+
+{offline_mailing_address}
+
+Your tax-deductible donation is greatly appreciated!`)
+
+=======
+>>>>>>> 49b590416b40728f90a711ea744f022c1949be33
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6">Settings &gt; General</h1>
@@ -328,7 +342,11 @@ export default function SettingsPage() {
               <Button className="mt-6">Save PayArc Settings</Button>
             </div>
           )}
+<<<<<<< HEAD
+         
+=======
 
+>>>>>>> 49b590416b40728f90a711ea744f022c1949be33
           {paymentGatewayTab === "nuvei" && (
             <div className="bg-white rounded-lg p-6 shadow-sm max-w-2xl">
               <h3 className="text-lg font-semibold mb-4">Nuvei Settings</h3>
@@ -396,6 +414,51 @@ export default function SettingsPage() {
               <Button className="mt-6">Save Nuvei Settings</Button>
             </div>
           )}
+<<<<<<< HEAD
+           {paymentGatewayTab === "offline" && (
+            <div className="bg-white rounded-lg p-6 shadow-sm max-w-2xl">
+              <h2 className="text-xl font-semibold mb-4">Offline Donations Settings</h2>
+              <div className="mb-6">
+                <div className="font-semibold mb-2">Collect Billing Details</div>
+                <div className="flex gap-8 items-center mb-2">
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      checked={billingEnabled}
+                      onChange={() => setBillingEnabled(true)}
+                    />
+                    Enabled
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      checked={!billingEnabled}
+                      onChange={() => setBillingEnabled(false)}
+                    />
+                    Disabled
+                  </label>
+                </div>
+                <div className="text-xs text-gray-500">
+                  If enabled, required billing address fields are added to Offline Donation forms. These fields are not required to process the transaction, but you may have a need to collect the data. Billing address details are added to both the donation and donor record.
+                </div>
+              </div>
+              <div className="mb-6">
+                <div className="font-semibold mb-2">Offline Donation Instructions</div>
+                <textarea
+                  className="w-full border rounded px-2 py-2 min-h-[180px]"
+                  value={instructions}
+                  onChange={e => setInstructions(e.target.value)}
+                />
+                <div className="text-xs text-gray-500 mt-2">
+                  The Offline Donation Instructions are a chance for you to educate the donor on how to best submit offline donations. These instructions appear directly on the form, and after submission of the form. You may also customize the instructions on individual forms as needed.
+                </div>
+              </div>
+              <Button className="mt-4">Save changes</Button>
+            </div>
+          )}
+
+=======
+>>>>>>> 49b590416b40728f90a711ea744f022c1949be33
         </div>
       )}
 
@@ -689,6 +752,10 @@ export default function SettingsPage() {
           </div>
         </div>
       )}
+<<<<<<< HEAD
+   </div>
+=======
     </div>
+>>>>>>> 49b590416b40728f90a711ea744f022c1949be33
   )
 }

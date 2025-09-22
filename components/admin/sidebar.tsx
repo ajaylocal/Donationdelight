@@ -36,7 +36,8 @@ import {
   LogOut,
   BarChart,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Podcast
 } from "lucide-react"
 import Image from "next/image"
 
@@ -116,7 +117,7 @@ export default function AdminSidebar() {
               className={`flex items-center ${open ? "gap-3 px-3" : "justify-center"} py-2 rounded hover:bg-green-50 font-medium ${activeTab === "subscriptions" ? "bg-green-100 text-green-700" : "text-gray-700"}`}
               onClick={() => setActiveTab("subscriptions")}
             >
-              <BarChart className={open ? "h-5 w-5" : "h-8 w-8"} />
+              <Podcast className={open ? "h-5 w-5" : "h-8 w-8"} />
               {open && "Subscriptions"}
             </Link>
             <Link

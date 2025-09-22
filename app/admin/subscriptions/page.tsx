@@ -62,7 +62,9 @@ export default function SubscriptionsPage() {
           <tbody>
             {subscriptions.map(sub => (
               <tr key={sub.id} className="border-b hover:bg-gray-50">
-                <td className="py-2 text-gray-500"># {sub.id}</td>
+                <td className="py-2 text-gray-500">
+                  <Link href={`/admin/subscriptions/${sub.id}/details`} className="text-blue-700 hover:underline"># {sub.id}</Link>
+                </td>
                 <td className="text-green-600 font-bold">${sub.amount.toFixed(2)}</td>
                 <td>{sub.donor}</td>
                 <td>{sub.form}</td>

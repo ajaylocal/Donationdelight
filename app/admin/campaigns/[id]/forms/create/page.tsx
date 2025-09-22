@@ -1,7 +1,5 @@
 "use client"
-
 import type React from "react"
-
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -57,6 +55,11 @@ export default function CreateFormPage() {
     availableUntil: "",
     goalAmount: "",
     maxDonationLimit: "1000",
+    dailyOption: false,
+    weeklyOption: false,
+    monthlyOption: false,
+   yearlyOption: false,
+   formpublicprivat: "public-form",
   })
 
   const [newAmount, setNewAmount] = useState("")
@@ -108,11 +111,40 @@ export default function CreateFormPage() {
                   id="charity-foundation"
                   checked={formData.organization === "charity-foundation"}
                   onCheckedChange={(checked) => handleInputChange("organization", checked ? "charity-foundation" : "")}
+                  className="border-2 border-blue-500 rounded"
                 />
                 <Label htmlFor="charity-foundation" className="text-sm font-medium">
                   Charity Foundation
                 </Label>
               </div>
+              <div className="flex items-center pt-4 space-x-2">   
+                <RadioGroup
+                  value={formData.formpublicprivat || "public-form"}
+                  onValueChange={(value) => handleInputChange("formpublicprivat", value)}
+                  className="flex items-center space-x-6"
+                >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem
+                    value="public-form"
+                    id="public-form"
+                    className="border-2 border-blue-500 rounded"
+                  />
+                  <Label htmlFor="public-form" className="text-sm font-medium">
+                    Public Form
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem
+                    value="private-form"
+                    id="private-form"
+                    className="border-2 border-blue-500 rounded"
+                  />
+                  <Label htmlFor="private-form" className="text-sm font-medium">
+                    Private Form
+                  </Label>
+                </div>
+              </RadioGroup>
+               </div>
             </CardContent>
           </Card>
 
@@ -153,7 +185,7 @@ export default function CreateFormPage() {
             <CardHeader>
               <div className="flex items-center gap-2">
                 <MapPin className="h-5 w-5 text-primary" />
-                <CardTitle className="text-lg text-primary">Form Place</CardTitle>
+                <CardTitle className="text-lg text-primary">Location</CardTitle>
               </div>
               <p className="text-sm text-muted-foreground">Specify where this Form will have its impact:</p>
             </CardHeader>
@@ -220,48 +252,205 @@ export default function CreateFormPage() {
               <p className="text-sm text-muted-foreground">Configure donation amounts, fees, and layout options:</p>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Donation Amount Limits */}
-              <div className="space-y-4">
-                <h4 className="text-sm font-medium">Donation Amount Limits</h4>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="min-donation" className="text-sm font-medium">
-                      Minimum Donation amount
-                    </Label>
-                    <Input
-                      id="min-donation"
-                      value={formData.minDonationAmount}
-                      onChange={(e) => handleInputChange("minDonationAmount", e.target.value)}
-                      className="bg-input"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="max-donation" className="text-sm font-medium">
-                      Maximum Donation amount
-                    </Label>
-                    <Input
-                      id="max-donation"
-                      value={formData.maxDonationAmount}
-                      onChange={(e) => handleInputChange("maxDonationAmount", e.target.value)}
-                      className="bg-input"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="max-range" className="text-sm font-medium">
-                      Maximum Amount for range input
-                    </Label>
-                    <Input
-                      id="max-range"
-                      value={formData.maxRangeAmount}
-                      onChange={(e) => handleInputChange("maxRangeAmount", e.target.value)}
-                      className="bg-input"
-                    />
-                  </div>
+              {/* Donation Type Selection */}
+              <RadioGroup
+                value={formData.donationType}
+                onValueChange={(value) => handleInputChange("donationType", value)}
+                className="space-y-4"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="fixed" id="fixed-amount" className="border-2 border-blue-500 rounded focus:ring-2 focus:ring-blue-400" />
+                  <Label htmlFor="fixed-amount" className="text-sm font-medium">
+                    Fixed donation amount
+                  </Label>
                 </div>
-              </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="custom" id="custom-amount" className="border-2 border-blue-500 rounded focus:ring-2 focus:ring-blue-400" />
+                  <Label htmlFor="custom-amount" className="text-sm font-medium">
+                    Allow custom donation amounts
+                  </Label>
+                </div>
+              </RadioGroup>
 
+              {/* Show fixed amount input only if 'fixed' is selected */}
+              {formData.donationType === "fixed" && (
+                <div className="space-y-4">
+                  <Label htmlFor="fixed-amount-input" className="text-sm font-medium">
+                    Fixed Donation Amount
+                  </Label>
+                  <Input
+                    id="fixed-amount-input"
+                    type="number"
+                    min="1"
+                    value={formData.fixedAmount}
+                    onChange={(e) => handleInputChange("fixedAmount", e.target.value)}
+                    className="bg-input"
+                  />
+                </div>
+              )}
+
+              {/* Show limits and suggestions only if 'custom' is selected */}
+              {formData.donationType === "custom" && (
+                <>
+                  <div className="space-y-4">
+                    <h4 className="text-sm font-medium">Donation Amount Limits</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="min-donation" className="text-sm font-medium">
+                          Minimum Donation amount
+                        </Label>
+                        <Input
+                          id="min-donation"
+                          value={formData.minDonationAmount}
+                          onChange={(e) => handleInputChange("minDonationAmount", e.target.value)}
+                          className="bg-input"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="max-donation" className="text-sm font-medium">
+                          Maximum Donation amount
+                        </Label>
+                        <Input
+                          id="max-donation"
+                          value={formData.maxDonationAmount}
+                          onChange={(e) => handleInputChange("maxDonationAmount", e.target.value)}
+                          className="bg-input"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="max-range" className="text-sm font-medium">
+                          Maximum Amount for range input
+                        </Label>
+                        <Input
+                          id="max-range"
+                          value={formData.maxRangeAmount}
+                          onChange={(e) => handleInputChange("maxRangeAmount", e.target.value)}
+                          className="bg-input"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  {/* Amount Suggestions */}
+                  <div className="space-y-4">
+                    <Label className="text-sm font-medium">Amount Suggestions</Label>
+                    <div className="space-y-3">
+                      <div className="flex flex-wrap gap-2">
+                        {formData.amountSuggestions.map((amount, index) => (
+                          <div key={index} className="flex items-center gap-1 bg-muted px-3 py-2 rounded-lg">
+                            <span className="text-sm font-medium">${amount}</span>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="h-4 w-4 p-0 hover:bg-destructive hover:text-destructive-foreground"
+                              onClick={() => removeAmountSuggestion(index)}
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="Enter amount (e.g., 25)"
+                          value={newAmount}
+                          onChange={(e) => setNewAmount(e.target.value)}
+                          className="bg-input flex-1"
+                          type="number"
+                          min="1"
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={addAmountSuggestion}
+                          className="flex items-center gap-1 bg-transparent"
+                        >
+                          <Plus className="h-4 w-4" />
+                          Add
+                        </Button>
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Donation range: Min: ${formData.minDonationAmount}.00, Max: ${formData.maxDonationAmount}.00
+                    </p>
+                  </div>
+                </>
+              )}
               <Separator />
-
+              <div className="space-y-4">
+                <Label className="text-sm font-medium">Donation frequency:</Label>
+                <RadioGroup
+                  value={formData.recurringType}
+                  onValueChange={(value) => handleInputChange("recurringType", value)}
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="one-time" id="one-time" className="border-2 border-blue-500 rounded focus:ring-2 focus:ring-blue-400" />
+                    <Label htmlFor="one-time" className="text-sm">
+                      One-time donation
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="recurring" id="recurring" className="border-2 border-blue-500 rounded focus:ring-2 focus:ring-blue-400" />
+                    <Label htmlFor="recurring" className="text-sm">
+                      Recurring donation
+                    </Label>
+                  </div>
+                </RadioGroup>
+                {/* Show recurring interval options if recurring is selected */}
+                {formData.recurringType === "recurring" && (
+                  <div className="space-y-2 ml-6">
+                    <Label className="text-sm font-medium">Recurring Plan</Label>
+                    <RadioGroup
+                      value={formData.recurringInterval}
+                      onValueChange={(value) => handleInputChange("recurringInterval", value)}
+                      className="flex gap-4 mt-2"
+                    >
+                      <div className="flex items-center gap-2">
+                        <RadioGroupItem value="daily" id="daily" className="border-2 border-blue-500 rounded focus:ring-2 focus:ring-blue-400" />
+                        <Label htmlFor="daily" className="text-sm">Daily</Label>
+                        <Checkbox
+                          checked={formData.dailyOption || false}
+                          onCheckedChange={(checked) => handleInputChange("dailyOption", checked)}
+                          className="border-2 border-blue-500 rounded ml-2"
+                        />
+                        <Label htmlFor="daily-option" className="text-xs ml-1">Option</Label>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <RadioGroupItem value="weekly" id="weekly" className="border-2 border-blue-500 rounded focus:ring-2 focus:ring-blue-400" />
+                        <Label htmlFor="weekly" className="text-sm">Weekly</Label>
+                        <Checkbox
+                          checked={formData.weeklyOption || false}
+                          onCheckedChange={(checked) => handleInputChange("weeklyOption", checked)}
+                          className="border-2 border-blue-500 rounded ml-2"
+                        />
+                        <Label htmlFor="weekly-option" className="text-xs ml-1">Option</Label>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <RadioGroupItem value="monthly" id="monthly" className="border-2 border-blue-500 rounded focus:ring-2 focus:ring-blue-400" />
+                        <Label htmlFor="monthly" className="text-sm">Monthly</Label>
+                        <Checkbox
+                          checked={formData.monthlyOption || false}
+                          onCheckedChange={(checked) => handleInputChange("monthlyOption", checked)}
+                          className="border-2 border-blue-500 rounded ml-2"
+                        />
+                        <Label htmlFor="monthly-option" className="text-xs ml-1">Option</Label>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <RadioGroupItem value="yearly" id="yearly" className="border-2 border-blue-500 rounded focus:ring-2 focus:ring-blue-400" />
+                        <Label htmlFor="yearly" className="text-sm">Yearly</Label>
+                        <Checkbox
+                          checked={formData.yearlyOption || false}
+                          onCheckedChange={(checked) => handleInputChange("yearlyOption", checked)}
+                          className="border-2 border-blue-500 rounded ml-2"
+                        />
+                        <Label htmlFor="yearly-option" className="text-xs ml-1">Option</Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+                )}
+              </div>
               {/* Donation Options */}
               <div className="space-y-4">
                 <h4 className="text-sm font-medium">Donation Options</h4>
@@ -271,6 +460,7 @@ export default function CreateFormPage() {
                       id="disable-notes"
                       checked={formData.disableDonationNotes}
                       onCheckedChange={(checked) => handleInputChange("disableDonationNotes", checked)}
+                      className="border-2 border-blue-500 rounded"
                     />
                     <Label htmlFor="disable-notes" className="text-sm font-medium">
                       Enable to disable notes on checkout
@@ -281,6 +471,7 @@ export default function CreateFormPage() {
                       id="fee-recovery"
                       checked={formData.feeRecovery}
                       onCheckedChange={(checked) => handleInputChange("feeRecovery", checked)}
+                      className="border-2 border-blue-500 rounded"
                     />
                     <Label htmlFor="fee-recovery" className="text-sm font-medium">
                       Ask donors to cover transaction fees
@@ -288,10 +479,9 @@ export default function CreateFormPage() {
                   </div>
                 </div>
               </div>
-
-              <Separator />
-
               {/* Transaction Fees */}
+              {/* 
+              <Separator />
               <div className="space-y-4">
                 <h4 className="text-sm font-medium">Transaction Costs</h4>
                 <p className="text-xs text-muted-foreground">
@@ -354,9 +544,11 @@ export default function CreateFormPage() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> 
+               <Separator />
+              */}
 
-              <Separator />
+             
 
               {/* Form Goals and Timeline */}
               <div className="space-y-4">
@@ -394,7 +586,7 @@ export default function CreateFormPage() {
               <Separator />
 
               {/* Layout Configuration */}
-              <div className="space-y-4">
+              {/* <div className="space-y-4">
                 <h4 className="text-sm font-medium">Layout Configuration</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
@@ -464,124 +656,22 @@ export default function CreateFormPage() {
                     </Select>
                   </div>
                 </div>
-              </div>
+              </div> */}
 
-              {/* Amount Suggestions */}
-              <div className="space-y-4">
-                <Label className="text-sm font-medium">Amount Suggestions</Label>
-                <div className="space-y-3">
-                  <div className="flex flex-wrap gap-2">
-                    {formData.amountSuggestions.map((amount, index) => (
-                      <div key={index} className="flex items-center gap-1 bg-muted px-3 py-2 rounded-lg">
-                        <span className="text-sm font-medium">${amount}</span>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          className="h-4 w-4 p-0 hover:bg-destructive hover:text-destructive-foreground"
-                          onClick={() => removeAmountSuggestion(index)}
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder="Enter amount (e.g., 25)"
-                      value={newAmount}
-                      onChange={(e) => setNewAmount(e.target.value)}
-                      className="bg-input flex-1"
-                      type="number"
-                      min="1"
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={addAmountSuggestion}
-                      className="flex items-center gap-1 bg-transparent"
-                    >
-                      <Plus className="h-4 w-4" />
-                      Add
-                    </Button>
-                  </div>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Donation range: Min: ${formData.minDonationAmount}.00, Max: ${formData.maxDonationAmount}.00
-                </p>
-              </div>
+             
             </CardContent>
           </Card>
 
-          <Card>
+          {/* <Card>
             <CardHeader>
               <CardTitle className="text-lg text-primary">Donation Settings</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <RadioGroup
-                value={formData.donationType}
-                onValueChange={(value) => handleInputChange("donationType", value)}
-                className="space-y-4"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="fixed" id="fixed-amount" />
-                  <Label htmlFor="fixed-amount" className="text-sm font-medium">
-                    Fixed donation amount
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="custom" id="custom-amount" />
-                  <Label htmlFor="custom-amount" className="text-sm font-medium">
-                    Allow custom donation amounts
-                  </Label>
-                </div>
-              </RadioGroup>
+              
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-sm text-muted-foreground">Suggested amount ($)</Label>
-                  <Input
-                    placeholder="25.00"
-                    value={formData.fixedAmount}
-                    onChange={(e) => handleInputChange("fixedAmount", e.target.value)}
-                    className="bg-input"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-sm text-muted-foreground">Goal amount ($)</Label>
-                  <Input
-                    placeholder="10000.00"
-                    value={formData.goalAmount}
-                    onChange={(e) => handleInputChange("goalAmount", e.target.value)}
-                    className="bg-input"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <Label className="text-sm font-medium">Donation frequency:</Label>
-                <RadioGroup
-                  value={formData.recurringType}
-                  onValueChange={(value) => handleInputChange("recurringType", value)}
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="one-time" id="one-time" />
-                    <Label htmlFor="one-time" className="text-sm">
-                      One-time donation
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="recurring" id="recurring" />
-                    <Label htmlFor="recurring" className="text-sm">
-                      Recurring donation
-                    </Label>
-                  </div>
-                </RadioGroup>
-              </div>
+              
             </CardContent>
-          </Card>
+          </Card> */}
 
           <Card>
             <CardHeader>
@@ -594,6 +684,7 @@ export default function CreateFormPage() {
                     id="tax-deductible"
                     checked={formData.taxDeductible}
                     onCheckedChange={(checked) => handleInputChange("taxDeductible", checked)}
+                    className="border-2 border-blue-500 rounded"
                   />
                   <Label htmlFor="tax-deductible" className="text-sm font-medium">
                     Tax deductible donation
@@ -605,6 +696,7 @@ export default function CreateFormPage() {
                     id="receipt-email"
                     checked={formData.receiptEmail}
                     onCheckedChange={(checked) => handleInputChange("receiptEmail", checked)}
+                    className="border-2 border-blue-500 rounded"
                   />
                   <Label htmlFor="receipt-email" className="text-sm font-medium">
                     Send email receipt automatically
@@ -616,6 +708,7 @@ export default function CreateFormPage() {
                     id="anonymous-donation"
                     checked={formData.anonymousDonation}
                     onCheckedChange={(checked) => handleInputChange("anonymousDonation", checked)}
+                    className="border-2 border-blue-500 rounded"
                   />
                   <Label htmlFor="anonymous-donation" className="text-sm font-medium">
                     Allow anonymous donations
@@ -633,8 +726,8 @@ export default function CreateFormPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <img
-                    src="/colorful-food-dish-with-vegetables.jpg"
-                    alt="Sample Form image"
+                    src="/abstract-geometric-shapes.png"
+                    alt="Placeholder Form image"
                     className="w-full h-48 object-cover rounded-lg border"
                   />
                   <p className="text-xs text-muted-foreground">
@@ -689,22 +782,23 @@ export default function CreateFormPage() {
               <RadioGroup
                 value={formData.showDonorName}
                 onValueChange={(value) => handleInputChange("showDonorName", value)}
+                className="space-y-4"
               >
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="show" id="show-donor" />
+                  <RadioGroupItem value="show" id="show-donor"   className="border-2 border-blue-500 rounded"/>
                   <Label htmlFor="show-donor" className="text-sm">
                     Show donor names publicly
                   </Label>
                   <span className="text-xs text-accent bg-accent/10 px-2 py-1 rounded">Default</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="initials" id="show-initials" />
+                  <RadioGroupItem value="initials" id="show-initials" className="border-2 border-blue-500 rounded"/>
                   <Label htmlFor="show-initials" className="text-sm">
                     Show initials only
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="anonymous" id="hide-donor" />
+                  <RadioGroupItem value="anonymous" id="hide-donor" className="border-2 border-blue-500 rounded"/>
                   <Label htmlFor="hide-donor" className="text-sm">
                     Keep all donations anonymous
                   </Label>
@@ -713,9 +807,9 @@ export default function CreateFormPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          {/* <Card>
             <CardHeader>
-              <CardTitle className="text-lg text-primary">Form Visibility & Limits</CardTitle>
+              <CardTitle className="text-lg text-primary">Form Visibility & Limits </CardTitle>
               <p className="text-sm text-muted-foreground">
                 Configure when your donation Form is active and set donation limits.
               </p>
@@ -785,7 +879,7 @@ export default function CreateFormPage() {
                 </div>
               </div>
             </CardContent>
-          </Card>
+          </Card> */}
 
           <div className="flex flex-col sm:flex-row gap-3 pt-6">
             <Button type="button" variant="outline" className="flex-1 bg-transparent">

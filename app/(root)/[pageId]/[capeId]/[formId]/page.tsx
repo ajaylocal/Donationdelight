@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Lock, CreditCard, X, Calendar } from "lucide-react"
 
 const DonationForm = () => {
-  const [donationTab, setDonationTab] = useState<"general" | "tribute">("tribute")
+  const [donationTab, setDonationTab] = useState<"general" | "tribute">("general")
   const [tributeType, setTributeType] = useState("celebration")
   const [honoreeName, setHonoreeName] = useState("")
   const [supporterType, setSupporterType] = useState("Corporate")
@@ -77,7 +77,7 @@ const DonationForm = () => {
 
           <Tabs
             value={donationTab}
-            onValueChange={(value) => setDonationTab(value as "general" | "tribute")}
+            onValueChange={(value) => setDonationTab(value as "tribute" | "general")}
             className="w-full"
           >
             <TabsList className="grid w-full grid-cols-2 bg-transparent p-0 h-auto">
@@ -261,9 +261,7 @@ const DonationForm = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Individual Unrestricted">Individual Unrestricted</SelectItem>
-                    <SelectItem value="Alumni Unrestricted">Alumni Unrestricted</SelectItem>
                     <SelectItem value="Corporate">Corporate</SelectItem>
-                    <SelectItem value="Foundation">Foundation</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -277,8 +275,9 @@ const DonationForm = () => {
                   id="organization"
                   checked={isFromOrganization}
                   onCheckedChange={(checked) => setIsFromOrganization(checked as boolean)}
-                  className="data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                  className="data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600 border-2 border-blue-500 rounded" 
                 />
+               
                 <Label htmlFor="organization" className="text-sm text-gray-700">
                   {donationTab === "tribute"
                     ? "I would like to give on behalf of an organization"

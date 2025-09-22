@@ -57,6 +57,11 @@ export default function EditFormPage() {
     availableUntil: "",
     goalAmount: "",
     maxDonationLimit: "1000",
+    dailyOption: false,
+    weeklyOption: false,
+    monthlyOption: false,
+    yearlyOption: false,
+    formpublicprivat: "public-form",
   })
 
   const [newAmount, setNewAmount] = useState("")
@@ -93,7 +98,7 @@ export default function EditFormPage() {
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <Heart className="h-6 w-6 text-primary" />
-            <h1 className="text-2xl font-bold text-primary">Create Donation Form</h1>
+            <h1 className="text-2xl font-bold text-primary">Edit Donation Form</h1>
           </div>
         </div>
 
@@ -108,10 +113,39 @@ export default function EditFormPage() {
                   id="charity-foundation"
                   checked={formData.organization === "charity-foundation"}
                   onCheckedChange={(checked) => handleInputChange("organization", checked ? "charity-foundation" : "")}
+                  className="border-2 border-blue-500 rounded"
                 />
                 <Label htmlFor="charity-foundation" className="text-sm font-medium">
                   Charity Foundation
                 </Label>
+              </div>
+              <div className="flex items-center pt-4 space-x-2">   
+                <RadioGroup
+                  value={formData.formpublicprivat || "public-form"}
+                  onValueChange={(value) => handleInputChange("formpublicprivat", value)}
+                  className="flex items-center space-x-6"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem
+                      value="public-form"
+                      id="public-form"
+                      className="border-2 border-blue-500 rounded"
+                    />
+                    <Label htmlFor="public-form" className="text-sm font-medium">
+                      Public Form
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem
+                      value="private-form"
+                      id="private-form"
+                      className="border-2 border-blue-500 rounded"
+                    />
+                    <Label htmlFor="private-form" className="text-sm font-medium">
+                      Private Form
+                    </Label>
+                  </div>
+                </RadioGroup>
               </div>
             </CardContent>
           </Card>
@@ -153,7 +187,7 @@ export default function EditFormPage() {
             <CardHeader>
               <div className="flex items-center gap-2">
                 <MapPin className="h-5 w-5 text-primary" />
-                <CardTitle className="text-lg text-primary">Form Place</CardTitle>
+                <CardTitle className="text-lg text-primary">Location</CardTitle>
               </div>
               <p className="text-sm text-muted-foreground">Specify where this Form will have its impact:</p>
             </CardHeader>
@@ -208,316 +242,12 @@ export default function EditFormPage() {
                   className="bg-input"
                 />
               </div>
-            </CardContent>
+           </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <div className="flex items-center gap-2">
-                <DollarSign className="h-5 w-5 text-primary" />
-                <CardTitle className="text-lg text-primary">Donation Configuration</CardTitle>
-              </div>
-              <p className="text-sm text-muted-foreground">Configure donation amounts, fees, and layout options:</p>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Donation Amount Limits */}
-              <div className="space-y-4">
-                <h4 className="text-sm font-medium">Donation Amount Limits</h4>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="min-donation" className="text-sm font-medium">
-                      Minimum Donation amount
-                    </Label>
-                    <Input
-                      id="min-donation"
-                      value={formData.minDonationAmount}
-                      onChange={(e) => handleInputChange("minDonationAmount", e.target.value)}
-                      className="bg-input"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="max-donation" className="text-sm font-medium">
-                      Maximum Donation amount
-                    </Label>
-                    <Input
-                      id="max-donation"
-                      value={formData.maxDonationAmount}
-                      onChange={(e) => handleInputChange("maxDonationAmount", e.target.value)}
-                      className="bg-input"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="max-range" className="text-sm font-medium">
-                      Maximum Amount for range input
-                    </Label>
-                    <Input
-                      id="max-range"
-                      value={formData.maxRangeAmount}
-                      onChange={(e) => handleInputChange("maxRangeAmount", e.target.value)}
-                      className="bg-input"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <Separator />
-
-              {/* Donation Options */}
-              <div className="space-y-4">
-                <h4 className="text-sm font-medium">Donation Options</h4>
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="disable-notes"
-                      checked={formData.disableDonationNotes}
-                      onCheckedChange={(checked) => handleInputChange("disableDonationNotes", checked)}
-                    />
-                    <Label htmlFor="disable-notes" className="text-sm font-medium">
-                      Enable to disable notes on checkout
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="fee-recovery"
-                      checked={formData.feeRecovery}
-                      onCheckedChange={(checked) => handleInputChange("feeRecovery", checked)}
-                    />
-                    <Label htmlFor="fee-recovery" className="text-sm font-medium">
-                      Ask donors to cover transaction fees
-                    </Label>
-                  </div>
-                </div>
-              </div>
-
-              <Separator />
-
-              {/* Transaction Fees */}
-              <div className="space-y-4">
-                <h4 className="text-sm font-medium">Transaction Costs</h4>
-                <p className="text-xs text-muted-foreground">
-                  Enter the fixed transaction costs in the left field and the percentage transaction costs in the right
-                  field.
-                </p>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-4">
-                    <Label className="text-sm w-40">Direct bank transfer</Label>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm">$</span>
-                      <Input
-                        value={formData.directBankTransferFixed}
-                        onChange={(e) => handleInputChange("directBankTransferFixed", e.target.value)}
-                        className="w-20 bg-input"
-                      />
-                      <span className="text-xs text-muted-foreground">(fixed)</span>
-                      <Input
-                        value={formData.directBankTransferVariable}
-                        onChange={(e) => handleInputChange("directBankTransferVariable", e.target.value)}
-                        className="w-20 bg-input"
-                      />
-                      <span className="text-xs text-muted-foreground">% (variable)</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <Label className="text-sm w-40">Credit Card</Label>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm">$</span>
-                      <Input
-                        value={formData.creditCardFixed}
-                        onChange={(e) => handleInputChange("creditCardFixed", e.target.value)}
-                        className="w-20 bg-input"
-                      />
-                      <span className="text-xs text-muted-foreground">(fixed)</span>
-                      <Input
-                        value={formData.creditCardVariable}
-                        onChange={(e) => handleInputChange("creditCardVariable", e.target.value)}
-                        className="w-20 bg-input"
-                      />
-                      <span className="text-xs text-muted-foreground">% (variable)</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <Label className="text-sm w-40">Payarc Hosted Checkout</Label>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm">$</span>
-                      <Input
-                        value={formData.payarcFixed}
-                        onChange={(e) => handleInputChange("payarcFixed", e.target.value)}
-                        className="w-20 bg-input"
-                      />
-                      <span className="text-xs text-muted-foreground">(fixed)</span>
-                      <Input
-                        value={formData.payarcVariable}
-                        onChange={(e) => handleInputChange("payarcVariable", e.target.value)}
-                        className="w-20 bg-input"
-                      />
-                      <span className="text-xs text-muted-foreground">% (variable)</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <Separator />
-
-              {/* Form Goals and Timeline */}
-              <div className="space-y-4">
-                <h4 className="text-sm font-medium">Form Goals & Timeline</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="fundraising-goal" className="text-sm font-medium">
-                      Fundraising Goal
-                    </Label>
-                    <Input
-                      id="fundraising-goal"
-                      value={formData.fundraisingGoal}
-                      onChange={(e) => handleInputChange("fundraisingGoal", e.target.value)}
-                      className="bg-input"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="end-date" className="text-sm font-medium">
-                      End Date
-                    </Label>
-                    <Input
-                      id="end-date"
-                      type="date"
-                      value={formData.endDate}
-                      onChange={(e) => handleInputChange("endDate", e.target.value)}
-                      className="bg-input"
-                    />
-                  </div>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Please note: You can still donate to the project after reaching the fundraising goal or end date.
-                </p>
-              </div>
-
-              <Separator />
-
-              {/* Layout Configuration */}
-              <div className="space-y-4">
-                <h4 className="text-sm font-medium">Layout Configuration</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium">Layout of Amount suggestions</Label>
-                    <Select
-                      value={formData.amountLayout}
-                      onValueChange={(value) => handleInputChange("amountLayout", value)}
-                    >
-                      <SelectTrigger className="bg-input">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="radio-button">Radio/button selection</SelectItem>
-                        <SelectItem value="dropdown">Dropdown selection</SelectItem>
-                        <SelectItem value="grid">Grid layout</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium">Layout of donation-frequency</Label>
-                    <Select
-                      value={formData.frequencyLayout}
-                      onValueChange={(value) => handleInputChange("frequencyLayout", value)}
-                    >
-                      <SelectTrigger className="bg-input">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="default">Default layout</SelectItem>
-                        <SelectItem value="inline">Inline layout</SelectItem>
-                        <SelectItem value="stacked">Stacked layout</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium">Layout of Designate to</Label>
-                    <Select
-                      value={formData.designateLayout}
-                      onValueChange={(value) => handleInputChange("designateLayout", value)}
-                    >
-                      <SelectTrigger className="bg-input">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="default">Default layout</SelectItem>
-                        <SelectItem value="card">Card layout</SelectItem>
-                        <SelectItem value="list">List layout</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium">Layout of Additional Information</Label>
-                    <Select
-                      value={formData.additionalInfoLayout}
-                      onValueChange={(value) => handleInputChange("additionalInfoLayout", value)}
-                    >
-                      <SelectTrigger className="bg-input">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="default">Default layout</SelectItem>
-                        <SelectItem value="accordion">Accordion layout</SelectItem>
-                        <SelectItem value="tabs">Tabs layout</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </div>
-
-              {/* Amount Suggestions */}
-              <div className="space-y-4">
-                <Label className="text-sm font-medium">Amount Suggestions</Label>
-                <div className="space-y-3">
-                  <div className="flex flex-wrap gap-2">
-                    {formData.amountSuggestions.map((amount, index) => (
-                      <div key={index} className="flex items-center gap-1 bg-muted px-3 py-2 rounded-lg">
-                        <span className="text-sm font-medium">${amount}</span>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          className="h-4 w-4 p-0 hover:bg-destructive hover:text-destructive-foreground"
-                          onClick={() => removeAmountSuggestion(index)}
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder="Enter amount (e.g., 25)"
-                      value={newAmount}
-                      onChange={(e) => setNewAmount(e.target.value)}
-                      className="bg-input flex-1"
-                      type="number"
-                      min="1"
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={addAmountSuggestion}
-                      className="flex items-center gap-1 bg-transparent"
-                    >
-                      <Plus className="h-4 w-4" />
-                      Add
-                    </Button>
-                  </div>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Donation range: Min: ${formData.minDonationAmount}.00, Max: ${formData.maxDonationAmount}.00
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg text-primary">Donation Settings</CardTitle>
+              <CardTitle className="text-lg text-primary">Donation Configuration</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <RadioGroup
@@ -526,40 +256,126 @@ export default function EditFormPage() {
                 className="space-y-4"
               >
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="fixed" id="fixed-amount" />
+                  <RadioGroupItem value="fixed" id="fixed-amount" className="border-2 border-blue-500 rounded focus:ring-2 focus:ring-blue-400" />
                   <Label htmlFor="fixed-amount" className="text-sm font-medium">
                     Fixed donation amount
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="custom" id="custom-amount" />
+                  <RadioGroupItem value="custom" id="custom-amount" className="border-2 border-blue-500 rounded focus:ring-2 focus:ring-blue-400" />
                   <Label htmlFor="custom-amount" className="text-sm font-medium">
                     Allow custom donation amounts
                   </Label>
                 </div>
               </RadioGroup>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-sm text-muted-foreground">Suggested amount ($)</Label>
+              {/* Show fixed amount input only if 'fixed' is selected */}
+              {formData.donationType === "fixed" && (
+                <div className="space-y-4">
+                  <Label htmlFor="fixed-amount-input" className="text-sm font-medium">
+                    Fixed Donation Amount
+                  </Label>
                   <Input
-                    placeholder="25.00"
+                    id="fixed-amount-input"
+                    type="number"
+                    min="1"
                     value={formData.fixedAmount}
                     onChange={(e) => handleInputChange("fixedAmount", e.target.value)}
                     className="bg-input"
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label className="text-sm text-muted-foreground">Goal amount ($)</Label>
-                  <Input
-                    placeholder="10000.00"
-                    value={formData.goalAmount}
-                    onChange={(e) => handleInputChange("goalAmount", e.target.value)}
-                    className="bg-input"
-                  />
-                </div>
-              </div>
+              )}
 
+              {/* Show limits and suggestions only if 'custom' is selected */}
+              {formData.donationType === "custom" && (
+                <>
+                  <div className="space-y-4">
+                    <h4 className="text-sm font-medium">Donation Amount Limits</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="min-donation" className="text-sm font-medium">
+                          Minimum Donation amount
+                        </Label>
+                        <Input
+                          id="min-donation"
+                          value={formData.minDonationAmount}
+                          onChange={(e) => handleInputChange("minDonationAmount", e.target.value)}
+                          className="bg-input"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="max-donation" className="text-sm font-medium">
+                          Maximum Donation amount
+                        </Label>
+                        <Input
+                          id="max-donation"
+                          value={formData.maxDonationAmount}
+                          onChange={(e) => handleInputChange("maxDonationAmount", e.target.value)}
+                          className="bg-input"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="max-range" className="text-sm font-medium">
+                          Maximum Amount for range input
+                        </Label>
+                        <Input
+                          id="max-range"
+                          value={formData.maxRangeAmount}
+                          onChange={(e) => handleInputChange("maxRangeAmount", e.target.value)}
+                          className="bg-input"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  {/* Amount Suggestions */}
+                  <div className="space-y-4">
+                    <Label className="text-sm font-medium">Amount Suggestions</Label>
+                    <div className="space-y-3">
+                      <div className="flex flex-wrap gap-2">
+                        {formData.amountSuggestions.map((amount, index) => (
+                          <div key={index} className="flex items-center gap-1 bg-muted px-3 py-2 rounded-lg">
+                            <span className="text-sm font-medium">${amount}</span>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="h-4 w-4 p-0 hover:bg-destructive hover:text-destructive-foreground"
+                              onClick={() => removeAmountSuggestion(index)}
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="Enter amount (e.g., 25)"
+                          value={newAmount}
+                          onChange={(e) => setNewAmount(e.target.value)}
+                          className="bg-input flex-1"
+                          type="number"
+                          min="1"
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={addAmountSuggestion}
+                          className="flex items-center gap-1 bg-transparent"
+                        >
+                          <Plus className="h-4 w-4" />
+                          Add
+                        </Button>
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Donation range: Min: ${formData.minDonationAmount}.00, Max: ${formData.maxDonationAmount}.00
+                    </p>
+                  </div>
+                </>
+              )}
+              <Separator />
               <div className="space-y-4">
                 <Label className="text-sm font-medium">Donation frequency:</Label>
                 <RadioGroup
@@ -567,18 +383,70 @@ export default function EditFormPage() {
                   onValueChange={(value) => handleInputChange("recurringType", value)}
                 >
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="one-time" id="one-time" />
+                    <RadioGroupItem value="one-time" id="one-time" className="border-2 border-blue-500 rounded focus:ring-2 focus:ring-blue-400" />
                     <Label htmlFor="one-time" className="text-sm">
                       One-time donation
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="recurring" id="recurring" />
+                    <RadioGroupItem value="recurring" id="recurring" className="border-2 border-blue-500 rounded focus:ring-2 focus:ring-blue-400" />
                     <Label htmlFor="recurring" className="text-sm">
                       Recurring donation
                     </Label>
                   </div>
                 </RadioGroup>
+                {/* Show recurring interval options if recurring is selected */}
+                {formData.recurringType === "recurring" && (
+                  <div className="space-y-2 ml-6">
+                    <Label className="text-sm font-medium">Recurring Plan</Label>
+                    <RadioGroup
+                      value={formData.recurringInterval}
+                      onValueChange={(value) => handleInputChange("recurringInterval", value)}
+                      className="flex gap-4 mt-2"
+                    >
+                      <div className="flex items-center gap-2">
+                        <RadioGroupItem value="daily" id="daily" className="border-2 border-blue-500 rounded focus:ring-2 focus:ring-blue-400" />
+                        <Label htmlFor="daily" className="text-sm">Daily</Label>
+                        <Checkbox
+                          checked={formData.dailyOption || false}
+                          onCheckedChange={(checked) => handleInputChange("dailyOption", checked)}
+                          className="border-2 border-blue-500 rounded ml-2"
+                        />
+                        <Label htmlFor="daily-option" className="text-xs ml-1">Option</Label>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <RadioGroupItem value="weekly" id="weekly" className="border-2 border-blue-500 rounded focus:ring-2 focus:ring-blue-400" />
+                        <Label htmlFor="weekly" className="text-sm">Weekly</Label>
+                        <Checkbox
+                          checked={formData.weeklyOption || false}
+                          onCheckedChange={(checked) => handleInputChange("weeklyOption", checked)}
+                          className="border-2 border-blue-500 rounded ml-2"
+                        />
+                        <Label htmlFor="weekly-option" className="text-xs ml-1">Option</Label>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <RadioGroupItem value="monthly" id="monthly" className="border-2 border-blue-500 rounded focus:ring-2 focus:ring-blue-400" />
+                        <Label htmlFor="monthly" className="text-sm">Monthly</Label>
+                        <Checkbox
+                          checked={formData.monthlyOption || false}
+                          onCheckedChange={(checked) => handleInputChange("monthlyOption", checked)}
+                          className="border-2 border-blue-500 rounded ml-2"
+                        />
+                        <Label htmlFor="monthly-option" className="text-xs ml-1">Option</Label>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <RadioGroupItem value="yearly" id="yearly" className="border-2 border-blue-500 rounded focus:ring-2 focus:ring-blue-400" />
+                        <Label htmlFor="yearly" className="text-sm">Yearly</Label>
+                        <Checkbox
+                          checked={formData.yearlyOption || false}
+                          onCheckedChange={(checked) => handleInputChange("yearlyOption", checked)}
+                          className="border-2 border-blue-500 rounded ml-2"
+                        />
+                        <Label htmlFor="yearly-option" className="text-xs ml-1">Option</Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -594,6 +462,7 @@ export default function EditFormPage() {
                     id="tax-deductible"
                     checked={formData.taxDeductible}
                     onCheckedChange={(checked) => handleInputChange("taxDeductible", checked)}
+                    className="border-2 border-blue-500 rounded"
                   />
                   <Label htmlFor="tax-deductible" className="text-sm font-medium">
                     Tax deductible donation
@@ -605,6 +474,7 @@ export default function EditFormPage() {
                     id="receipt-email"
                     checked={formData.receiptEmail}
                     onCheckedChange={(checked) => handleInputChange("receiptEmail", checked)}
+                    className="border-2 border-blue-500 rounded"
                   />
                   <Label htmlFor="receipt-email" className="text-sm font-medium">
                     Send email receipt automatically
@@ -616,6 +486,7 @@ export default function EditFormPage() {
                     id="anonymous-donation"
                     checked={formData.anonymousDonation}
                     onCheckedChange={(checked) => handleInputChange("anonymousDonation", checked)}
+                    className="border-2 border-blue-500 rounded"
                   />
                   <Label htmlFor="anonymous-donation" className="text-sm font-medium">
                     Allow anonymous donations
@@ -633,8 +504,8 @@ export default function EditFormPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <img
-                    src="/colorful-food-dish-with-vegetables.jpg"
-                    alt="Sample Form image"
+                    src="/abstract-geometric-shapes.png"
+                    alt="Placeholder Form image"
                     className="w-full h-48 object-cover rounded-lg border"
                   />
                   <p className="text-xs text-muted-foreground">
@@ -689,22 +560,23 @@ export default function EditFormPage() {
               <RadioGroup
                 value={formData.showDonorName}
                 onValueChange={(value) => handleInputChange("showDonorName", value)}
+                className="space-y-4"
               >
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="show" id="show-donor" />
+                  <RadioGroupItem value="show" id="show-donor"   className="border-2 border-blue-500 rounded"/>
                   <Label htmlFor="show-donor" className="text-sm">
                     Show donor names publicly
                   </Label>
                   <span className="text-xs text-accent bg-accent/10 px-2 py-1 rounded">Default</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="initials" id="show-initials" />
+                  <RadioGroupItem value="initials" id="show-initials" className="border-2 border-blue-500 rounded"/>
                   <Label htmlFor="show-initials" className="text-sm">
                     Show initials only
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="anonymous" id="hide-donor" />
+                  <RadioGroupItem value="anonymous" id="hide-donor" className="border-2 border-blue-500 rounded"/>
                   <Label htmlFor="hide-donor" className="text-sm">
                     Keep all donations anonymous
                   </Label>
@@ -713,6 +585,7 @@ export default function EditFormPage() {
             </CardContent>
           </Card>
 
+          {/*
           <Card>
             <CardHeader>
               <CardTitle className="text-lg text-primary">Form Visibility & Limits</CardTitle>
@@ -786,13 +659,14 @@ export default function EditFormPage() {
               </div>
             </CardContent>
           </Card>
+          */}
 
           <div className="flex flex-col sm:flex-row gap-3 pt-6">
             <Button type="button" variant="outline" className="flex-1 bg-transparent">
               Cancel
             </Button>
             <Button type="submit" className="flex-1 bg-green-500 hover:bg-green-600 text-white">
-              Create Form
+              Update Form
             </Button>
           </div>
         </form>
